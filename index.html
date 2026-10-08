@@ -310,6 +310,38 @@
 
   </div>
 
+  <!-- Anti-Theft Domain Lock & DevTools Protection -->
+  <script>
+    (function(){
+      // 1. Authorized Domain Lock
+      const allowed = ['shuvokabir360.github.io', 'localhost', '127.0.0.1'];
+      const host = window.location.hostname.toLowerCase();
+      const valid = allowed.some(d => host === d || host.endsWith('.' + d));
+      if (!valid) {
+        document.documentElement.innerHTML = '<div style="background:#05070E;color:#FF0055;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;text-align:center;padding:24px;"><h1>⛔ Unauthorized Copy Detected</h1><p style="color:#FFF;font-size:16px;max-width:500px;line-height:1.6;">This 3D Flag Battle Arena is protected property and licensed exclusively to <strong>shuvokabir360</strong>.<br><br><a href="https://shuvokabir360.github.io/3d-Flag-Battle-Game/" style="background:#00E5FF;color:#000;padding:12px 24px;border-radius:24px;text-decoration:none;font-weight:bold;">Play Official Version Here</a></p></div>';
+        setTimeout(() => { window.location.href = 'https://shuvokabir360.github.io/3d-Flag-Battle-Game/'; }, 2500);
+        throw new Error('Unauthorized domain distribution blocked.');
+      }
+
+      // 2. Disable Right Click Context Menu
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+      }, { capture: true });
+
+      // 3. Block DevTools & Source Inspection Shortcuts (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
+      document.addEventListener('keydown', function(e) {
+        if (e.keyCode === 123) { e.preventDefault(); return false; }
+        if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 75)) {
+          e.preventDefault(); return false;
+        }
+        if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) {
+          e.preventDefault(); return false;
+        }
+      }, { capture: true });
+    })();
+  </script>
+
   <!-- Scripts -->
   <script src="countries.js"></script>
   <script src="audio.js"></script>
