@@ -6,6 +6,25 @@
   <title>Flag Battle 3D - Marble Race Elimination Arena</title>
   <meta name="description" content="Physics-based circular 3D arena battle game built with Three.js. 150+ country flag spheres competing in a spinning neon kinematic ring!" />
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Progressive Web App (PWA) Manifest & Colors -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#060812" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <!-- Apple iOS & iPadOS Web App Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Flag Battle 3D" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png" />
+
+  <!-- Favicon Icons -->
+  <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+
   <!-- Three.js r128 CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -40,6 +59,9 @@
           <button id="btnSound" class="btn-icon" title="Toggle Mute">🔊</button>
           <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="60" title="Adjust Volume" />
         </div>
+
+        <!-- Install App (Add to Home Screen) Header Button -->
+        <button id="btnHeaderInstall" class="btn-icon install-header-btn" title="Install App (Add to Home Screen)">📱</button>
 
         <!-- Toggle Wins / Leaderboard Sidebar Button -->
         <button id="btnToggleLeaderboard" class="btn-icon active-glow" title="View Wins Leaderboard">🏆</button>
@@ -299,7 +321,85 @@
           <input type="range" id="bgmVolumeSlider" class="slider-ctrl" min="0" max="100" step="5" value="35" />
         </div>
 
+        <!-- Install App / Add to Home Screen Section for Apple & Android -->
+        <div class="settings-section install-promo-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span class="section-label" style="margin:0; font-weight:700;">📱 Install App (Add to Home Screen):</span>
+            <span style="font-size:11px; color:var(--primary-cyan); font-weight:700;">iOS & Android</span>
+          </div>
+          <button id="btnSettingsInstall" class="btn-primary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg, #00e5ff, #0088ff); color:#060812; font-weight:800; padding:10px; border-radius:10px; cursor:pointer;">
+            <span>📲 Install App on Phone / Tablet</span>
+          </button>
+          <div style="font-size:11px; color:rgba(255,255,255,0.65); margin-top:6px; line-height:1.4;">
+            Launch directly from your phone's home screen in smooth fullscreen without browser URL bar!
+          </div>
+        </div>
+
         <button class="btn-primary" id="closeSettings" style="width:100%; margin-top:12px;">APPLY & CLOSE</button>
+      </div>
+    </div>
+
+    <!-- PWA Install Modal (Apple & Android Add to Home Screen Instructions) -->
+    <div id="installModal" class="app-modal">
+      <div class="modal-card install-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h2 style="font-size:18px; font-weight:800; color:var(--primary-cyan); margin:0; display:flex; align-items:center; gap:8px;">
+            <img src="icons/icon-192.png" style="width:28px; height:28px; border-radius:6px;" alt="Logo" />
+            Install Flag Battle 3D
+          </h2>
+          <button id="closeInstallModal" class="btn-icon" style="width:30px; height:30px; font-size:16px;">✕</button>
+        </div>
+
+        <p style="font-size:12px; color:rgba(255,255,255,0.75); line-height:1.45; margin-bottom:14px; text-align:left;">
+          Install this game to play offline and enjoy true 16:9 fullscreen without browser address bars!
+        </p>
+
+        <!-- Direct Native Prompt Button (when available on Android Chrome) -->
+        <div id="nativeInstallPromptSection" style="display:none; margin-bottom:14px;">
+          <button id="btnNativeInstallNow" class="btn-primary" style="width:100%; padding:12px; font-size:14px; font-weight:800; background:linear-gradient(135deg, #00e5ff, #00ff88); color:#060812; border-radius:10px;">
+            📲 INSTALL APP NOW
+          </button>
+        </div>
+
+        <!-- Platform Tabs -->
+        <div class="install-tabs">
+          <button class="install-tab-btn active" id="tabAppleBtn">🍎 Apple (iOS / iPad)</button>
+          <button class="install-tab-btn" id="tabAndroidBtn">🤖 Android (Chrome)</button>
+        </div>
+
+        <!-- Apple iOS Guide -->
+        <div id="appleInstallGuide" class="install-guide-panel active">
+          <div class="guide-step">
+            <div class="step-num">1</div>
+            <div class="step-desc">Open Safari and tap the <strong>Share</strong> button <span class="guide-icon">📤</span> at the bottom of the screen.</div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num">2</div>
+            <div class="step-desc">Scroll down in the share sheet and tap <strong>Add to Home Screen</strong> <span class="guide-icon">➕</span>.</div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num">3</div>
+            <div class="step-desc">Tap <strong>Add</strong> in the top-right corner. The Flag Battle 3D app icon will appear on your Home Screen!</div>
+          </div>
+        </div>
+
+        <!-- Android Guide -->
+        <div id="androidInstallGuide" class="install-guide-panel">
+          <div class="guide-step">
+            <div class="step-num">1</div>
+            <div class="step-desc">Open Chrome and tap the <strong>Menu</strong> icon <span class="guide-icon">⋮</span> (three dots in top right).</div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num">2</div>
+            <div class="step-desc">Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</div>
+          </div>
+          <div class="guide-step">
+            <div class="step-num">3</div>
+            <div class="step-desc">Tap <strong>Install</strong> to confirm. The game is now installed in your app drawer!</div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btnDismissInstall" style="width:100%; margin-top:14px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; padding:10px;">GOT IT</button>
       </div>
     </div>
 
@@ -339,38 +439,6 @@
     </div>
 
   </div>
-
-  <!-- Anti-Theft Domain Lock & DevTools Protection -->
-  <script>
-    (function(){
-      // 1. Authorized Domain Lock
-      const allowed = ['shuvokabir360.github.io', 'localhost', '127.0.0.1'];
-      const host = window.location.hostname.toLowerCase();
-      const valid = allowed.some(d => host === d || host.endsWith('.' + d));
-      if (!valid) {
-        document.documentElement.innerHTML = '<div style="background:#05070E;color:#FF0055;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;text-align:center;padding:24px;"><h1>⛔ Unauthorized Copy Detected</h1><p style="color:#FFF;font-size:16px;max-width:500px;line-height:1.6;">This 3D Flag Battle Arena is protected property and licensed exclusively to <strong>shuvokabir360</strong>.<br><br><a href="https://shuvokabir360.github.io/3d-Flag-Battle-Game/" style="background:#00E5FF;color:#000;padding:12px 24px;border-radius:24px;text-decoration:none;font-weight:bold;">Play Official Version Here</a></p></div>';
-        setTimeout(() => { window.location.href = 'https://shuvokabir360.github.io/3d-Flag-Battle-Game/'; }, 2500);
-        throw new Error('Unauthorized domain distribution blocked.');
-      }
-
-      // 2. Disable Right Click Context Menu
-      document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        return false;
-      }, { capture: true });
-
-      // 3. Block DevTools & Source Inspection Shortcuts (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
-      document.addEventListener('keydown', function(e) {
-        if (e.keyCode === 123) { e.preventDefault(); return false; }
-        if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 75)) {
-          e.preventDefault(); return false;
-        }
-        if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) {
-          e.preventDefault(); return false;
-        }
-      }, { capture: true });
-    })();
-  </script>
 
   <!-- Scripts -->
   <script src="countries.js"></script>

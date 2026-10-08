@@ -1176,3 +1176,128 @@ body.is-fullscreen .stage-header:hover {
   font-weight: 700;
 }
 
+/* PWA Install Modal & Guide Styles ("game ta jate apple and android a install kora jay add to home screen theke") */
+#installModal {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 8, 18, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#installModal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.install-card {
+  max-width: 440px;
+  width: 92%;
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 229, 255, 0.25);
+}
+
+.install-promo-box {
+  border: 1px dashed rgba(0, 229, 255, 0.4);
+  background: rgba(0, 229, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.install-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.install-tab-btn {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.install-tab-btn.active {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: var(--primary-cyan);
+  color: var(--primary-cyan);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+}
+
+.install-guide-panel {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.install-guide-panel.active {
+  display: flex;
+}
+
+.guide-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary-cyan);
+  color: #060812;
+  font-size: 11px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.step-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+}
+
+.guide-icon {
+  font-size: 14px;
+  vertical-align: middle;
+  padding: 0 2px;
+}
+
+.install-header-btn.pulse-glow {
+  animation: installPulse 2s infinite ease-in-out;
+  border-color: var(--primary-cyan);
+}
+
+@keyframes installPulse {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(0, 229, 255, 0.9);
+    transform: scale(1.08);
+  }
+}
+
