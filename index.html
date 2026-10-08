@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Flag Battle 3D - Marble Race Elimination Arena</title>
+  <meta name="description" content="Physics-based circular 3D arena battle game built with Three.js. 150+ country flag spheres competing in a spinning neon kinematic ring!" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Three.js r128 CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <!-- 16:9 Fixed Aspect Ratio Game Stage -->
+  <div id="gameStage">
+
+    <!-- 1. Dedicated Top Header Bar (Outside Game Canvas) -->
+    <header class="stage-header">
+      <div class="brand-section">
+        <div class="brand-icon">⚔️</div>
+        <div>
+          <h1 class="brand-title">FLAG BATTLE 3D</h1>
+          <div class="remaining-label" id="remainingText">195 / 195 Remaining</div>
+        </div>
+      </div>
+
+      <!-- Real-time Remaining Progress Bar -->
+      <div class="progress-track-inline">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+
+      <div class="hud-meta">
+        <div class="timer-pill">
+          <span>⏱️</span>
+          <span id="timerText">00:00</span>
+        </div>
+
+        <!-- Volume & Mute Control Slider -->
+        <div class="volume-container" title="Sound Volume">
+          <button id="btnSound" class="btn-icon" title="Toggle Mute">🔊</button>
+          <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="60" title="Adjust Volume" />
+        </div>
+
+        <!-- Toggle Wins / Leaderboard Sidebar Button -->
+        <button id="btnToggleLeaderboard" class="btn-icon active-glow" title="View Wins Leaderboard">🏆</button>
+
+        <!-- Fullscreen Button in Header -->
+        <button id="btnFullscreenTop" class="btn-icon" title="Toggle Fullscreen (F)">⛶</button>
+      </div>
+    </header>
+
+    <!-- 2. Pure 3D Game Canvas Viewport (Completely Free & Unobstructed) -->
+    <main id="gameMain">
+      <div id="canvasContainer"></div>
+
+      <!-- Floating Exit Fullscreen Button in Fullscreen Mode -->
+      <button id="btnFloatingExitFs" class="floating-exit-fs-btn" style="display:none;" title="Exit Fullscreen (Esc / F)">
+        <span>🗗</span> Exit Fullscreen
+      </button>
+
+      <!-- Left Side Permanent Top 10 & Top 3 Podium Panel -->
+      <aside class="left-top-panel" id="leftTopPanel">
+        <div class="left-panel-header">
+          <div class="left-panel-title">
+            <span>👑 TOP 10 RANKINGS</span>
+          </div>
+          <div class="left-pills-row">
+            <button class="left-pill-btn active" id="pillAllTime" title="All-Time Wins Leaderboard">🏆 ALL-TIME</button>
+            <button class="left-pill-btn" id="pillRound" title="Round Finishers">⚡ ROUND</button>
+          </div>
+        </div>
+
+        <!-- Top 3 Podium Highlights -->
+        <div class="top3-podium-section" id="top3PodiumSection">
+          <!-- 🥇 1st Place -->
+          <div class="podium-card gold" id="podiumGold">
+            <div class="podium-medal">🥇 1st</div>
+            <div class="podium-flag" id="goldFlag">🏳️</div>
+            <div class="podium-info">
+              <div class="podium-name" id="goldName">No Champion</div>
+              <div class="podium-badge" id="goldWins">0 Wins</div>
+            </div>
+          </div>
+
+          <!-- 🥈 2nd Place -->
+          <div class="podium-card silver" id="podiumSilver">
+            <div class="podium-medal">🥈 2nd</div>
+            <div class="podium-flag" id="silverFlag">🏳️</div>
+            <div class="podium-info">
+              <div class="podium-name" id="silverName">--</div>
+              <div class="podium-badge" id="silverWins">0 Wins</div>
+            </div>
+          </div>
+
+          <!-- 🥉 3rd Place -->
+          <div class="podium-card bronze" id="podiumBronze">
+            <div class="podium-medal">🥉 3rd</div>
+            <div class="podium-flag" id="bronzeFlag">🏳️</div>
+            <div class="podium-info">
+              <div class="podium-name" id="bronzeName">--</div>
+              <div class="podium-badge" id="bronzeWins">0 Wins</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ranks 4 to 10 Compact List -->
+        <div class="ranks4to10-section">
+          <div class="section-micro-label">RANKS 4 - 10</div>
+          <div class="ranks4to10-list" id="ranks4to10List">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- Floating Winner Flags Celebration Overlay -->
+      <div id="floatingFlagsContainer"></div>
+    </main>
+
+    <!-- 3. Dedicated Bottom Footer Controls (Outside Game Canvas) -->
+    <footer class="stage-footer">
+      <div class="footer-left">
+        <button id="btnPause" class="control-btn" title="Pause / Resume">
+          <span id="pauseIcon">⏸</span>
+          <span class="btn-text">Pause</span>
+        </button>
+
+        <button id="btnRestart" class="control-btn" title="Restart Battle">
+          <span>🔄</span>
+          <span class="btn-text">Restart</span>
+        </button>
+
+        <button id="btnSpeed" class="control-btn" title="Cycle Game Speed">
+          <span class="speed-badge">1.0x</span>
+        </button>
+
+        <button id="btnGravity" class="control-btn active" title="Toggle Balloon Floating / Gravity Mode">
+          <span>🎈 Float: ON</span>
+        </button>
+      </div>
+
+      <div class="footer-right">
+        <!-- Auto Battle / Draw 3-sec Loop -->
+        <button id="btnAutoLoop" class="control-btn auto-active" title="Toggle Auto-start next round after 3s">
+          <span id="autoLoopLabel">🔁 Auto: ON (3s)</span>
+        </button>
+
+        <button id="btnSettings" class="control-btn" title="Arena & Music Settings">
+          <span>⚙️ Settings & Music</span>
+        </button>
+
+        <!-- Fullscreen Button in Bottom Footer -->
+        <button id="btnFullscreen" class="control-btn" title="Toggle Fullscreen (F)">
+          <span id="fullscreenIcon">⛶</span>
+          <span class="btn-text" id="fullscreenText">Fullscreen</span>
+        </button>
+      </div>
+    </footer>
+
+    <!-- Championship Wins Tally & Elimination Sidebar -->
+    <aside class="leaderboard-drawer" id="leaderboardDrawer">
+      <!-- Tabs Header -->
+      <div class="drawer-tabs-header">
+        <button class="drawer-tab-btn active" id="tabWinsBtn">🏆 WINS TALLY</button>
+        <button class="drawer-tab-btn" id="tabElimsBtn">📜 ROUND LOG</button>
+      </div>
+
+      <!-- Tab 1: Wins Tally (How many times each country came 1st) -->
+      <div class="tab-content" id="tabWinsContent">
+        <div class="tab-summary-bar">
+          <span>Total Rounds Played: <strong id="totalRoundsLabel">0</strong></span>
+          <button class="btn-clear-tally" id="btnClearTally" title="Reset Wins Tally">🗑️ Reset</button>
+        </div>
+        <div class="drawer-list" id="winsTallyList">
+          <div class="empty-state">No victories recorded yet.<br>Play a round to crown a champion!</div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Live Elimination Log -->
+      <div class="tab-content" id="tabElimsContent" style="display: none;">
+        <div class="drawer-header-compact">
+          <span style="font-size:12px; font-weight:700;">Eliminated Order</span>
+          <div class="out-badge" id="eliminatedCountBadge">0 Out</div>
+        </div>
+        <div class="drawer-list" id="eliminatedList">
+          <div class="empty-state">No flags escaped yet.<br>Monitoring perimeter...</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Settings Modal Dialog -->
+    <div id="settingsModal">
+      <div class="modal-card">
+        <h2 style="margin-bottom: 6px; font-weight: 900;">Arena Configuration</h2>
+        <p style="color: rgba(255,255,255,0.6); font-size: 13px; margin-bottom: 18px;">Customize the 3D spinning physics arena</p>
+
+        <div class="settings-section">
+          <span class="section-label">Number of Flag Spheres:</span>
+          <div class="chips-row">
+            <div class="chip chip-participants" data-val="50">50</div>
+            <div class="chip chip-participants" data-val="100">100</div>
+            <div class="chip chip-participants" data-val="150">150</div>
+            <div class="chip chip-participants active" data-val="195">195 (All World)</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <span class="section-label">Ring Escape Gaps:</span>
+          <div class="chips-row">
+            <div class="chip chip-gaps" data-val="1">1 Gap</div>
+            <div class="chip chip-gaps active" data-val="2">2 Gaps</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <span class="section-label" style="margin:0;">Ring Angular Speed:</span>
+            <span id="speedLabel" style="font-family:var(--font-mono); font-size:13px; color:var(--primary-cyan);">1.15 rad/s</span>
+          </div>
+          <input type="range" id="speedSlider" class="slider-ctrl" min="0.4" max="3.0" step="0.1" value="1.15" />
+        </div>
+
+        <!-- Auto Play Timer Configuration ("3sec, 5sec, 10sec, 15sec and custom") -->
+        <div class="settings-section">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span class="section-label" style="margin:0;">⏱️ Auto Play Next Round Timer:</span>
+            <span id="autoTimerLabel" style="font-family:var(--font-mono); font-size:12px; color:var(--primary-cyan);">3s Delay</span>
+          </div>
+          <div class="chips-row auto-timer-chips" style="flex-wrap:wrap; gap:6px;">
+            <div class="chip chip-autotimer" data-val="off">OFF</div>
+            <div class="chip chip-autotimer active" data-val="3">3s</div>
+            <div class="chip chip-autotimer" data-val="5">5s</div>
+            <div class="chip chip-autotimer" data-val="10">10s</div>
+            <div class="chip chip-autotimer" data-val="15">15s</div>
+            <div class="chip chip-autotimer" data-val="custom">Custom</div>
+          </div>
+          <div id="customTimerRow" style="display:none; margin-top:8px; align-items:center; gap:8px;">
+            <span style="font-size:12px; color:rgba(255,255,255,0.7);">Custom Seconds:</span>
+            <input type="number" id="customTimerInput" min="1" max="180" value="7" style="width:72px; padding:6px 10px; background:rgba(14,22,48,0.9); border:1px solid var(--primary-cyan); border-radius:6px; color:#fff; font-family:var(--font-mono); font-weight:700;" />
+            <button id="btnApplyCustomTimer" style="padding:6px 14px; background:linear-gradient(135deg, var(--primary-cyan), #0099FF); color:#000; font-weight:800; border:none; border-radius:6px; cursor:pointer; font-size:12px;">SET</button>
+          </div>
+        </div>
+
+        <!-- 10 Soft Ambient Background Sounds ("10 ta background sound add koro ja setting theke set kora jabe") -->
+        <div class="settings-section">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span class="section-label" style="margin:0;">🎵 Background Music (10 Soft Sounds):</span>
+            <span id="bgmTrackLabel" style="font-family:var(--font-mono); font-size:12px; color:var(--primary-cyan);">🌌 Cosmic Serenity</span>
+          </div>
+          <select id="bgmTrackSelect" class="bgm-select-ctrl">
+            <option value="off">🔇 Off / Mute BGM</option>
+            <option value="cosmic">🌌 1. Cosmic Serenity (Deep Ambient Pad)</option>
+            <option value="crystal">✨ 2. Crystal Dreams (Soft Shimmering Chimes)</option>
+            <option value="ocean">🌊 3. Ocean Tide (Calming Wave Swells & Sub)</option>
+            <option value="lofi">🪐 4. Deep Space Lofi (Warm Mellow Jazz Chords)</option>
+            <option value="zen">🌿 5. Zen Sanctuary (Peaceful Bamboo & Bells)</option>
+            <option value="starry">🌙 6. Starry Night (Ethereal Celestial Harp)</option>
+            <option value="twilight">🎹 7. Twilight Rhodes (Velvet Electric Piano)</option>
+            <option value="morning">☀️ 8. Morning Glow (Warm Acoustic Overtones)</option>
+            <option value="rain">🌧️ 9. Rainy Reverie (Soft Rain & Calming Notes)</option>
+            <option value="aurora">🧘 10. Aurora Solitude (Meditative Singing Bowls)</option>
+          </select>
+        </div>
+
+        <div class="settings-section">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <span class="section-label" style="margin:0;">Music Volume (Soft & Pleasing):</span>
+            <span id="bgmVolumeLabel" style="font-family:var(--font-mono); font-size:13px; color:var(--primary-cyan);">35%</span>
+          </div>
+          <input type="range" id="bgmVolumeSlider" class="slider-ctrl" min="0" max="100" step="5" value="35" />
+        </div>
+
+        <button class="btn-primary" id="closeSettings" style="width:100%; margin-top:12px;">APPLY & CLOSE</button>
+      </div>
+    </div>
+
+    <!-- Crystal-Clear World Championship Winner Announcement Stage -->
+    <div id="winnerModal">
+      <div class="winner-card">
+        <!-- Top Crown Badge -->
+        <div class="winner-banner-badge">
+          <span>👑 WORLD CHAMPION 👑</span>
+        </div>
+
+        <!-- Giant High-Resolution Winning Flag Showcase Stage -->
+        <div class="winner-flag-canvas-wrap" id="winnerFlagCanvasWrap"></div>
+
+        <!-- Big Crystal-Clear Country Showcase Box -->
+        <div class="winner-hero-box">
+          <div class="winner-flag-large" id="winnerFlagLarge">🇦🇿</div>
+          <div class="winner-info-group">
+            <div class="winner-country-title" id="winnerName">AZERBAIJAN</div>
+            <div class="winner-stats-row">
+              <span class="badge-tag code-tag" id="winnerCodeTag">AZE</span>
+              <span class="badge-tag wins-tag" id="winnerWinsTallyTag">🏆 1st Victory</span>
+              <span class="badge-tag time-tag" id="winnerTimeTag">⏱️ 01:19</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Auto countdown ticker indicator -->
+        <div class="countdown-badge" id="countdownBadge">
+          <span class="pulse-dot"></span> Next Round Starting in <strong id="countdownSecs">3</strong>s...
+        </div>
+
+        <div class="winner-actions-bar">
+          <button class="btn-primary" id="btnPlayAgain">⚔️ PLAY AGAIN</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="countries.js"></script>
+  <script src="audio.js"></script>
+  <script src="physics.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
