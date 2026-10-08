@@ -321,6 +321,23 @@
           <input type="range" id="bgmVolumeSlider" class="slider-ctrl" min="0" max="100" step="5" value="35" />
         </div>
 
+        <!-- Keep Screen Awake Toggle ("ei game ta jotokhon cholte totokhon screen off hobe na") -->
+        <div class="settings-section" style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,229,255,0.06); border:1px solid rgba(0,229,255,0.25); border-radius:10px; padding:10px 14px;">
+          <div>
+            <div style="font-weight:700; font-size:13px; color:#fff; display:flex; align-items:center; gap:6px;">
+              <span>🔆 Keep Screen Awake:</span>
+              <span id="wakeLockStatusLabel" style="font-size:11px; color:#00ff88; font-weight:800;">ACTIVE (ON)</span>
+            </div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.6); margin-top:3px;">
+              Screen will stay ON and never sleep while game is running
+            </div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleWakeLock" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
         <!-- Install App / Add to Home Screen Section for Apple & Android -->
         <div class="settings-section install-promo-box">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
