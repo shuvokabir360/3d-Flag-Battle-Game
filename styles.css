@@ -23,6 +23,8 @@
 html, body {
   width: 100vw;
   height: 100vh;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
   background-color: #020307;
   font-family: var(--font-main);
@@ -30,28 +32,30 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
-/* 16:9 Fixed Aspect Ratio Esports Game Stage */
+/* 16:9 Fixed Base Resolution Esports Game Stage with Uniform GPU Scaling */
 #gameStage {
-  position: relative;
-  width: min(100vw, calc(100vh * 16 / 9));
-  height: min(100vh, calc(100vw * 9 / 16));
-  aspect-ratio: 16 / 9;
+  position: absolute;
+  width: 1920px;
+  height: 1080px;
+  max-width: none;
+  max-height: none;
   background: var(--bg-deep);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid rgba(0, 229, 255, 0.25);
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 229, 255, 0.12);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 229, 255, 0.15);
+  transform-origin: center center;
+  will-change: transform;
 }
 
 :fullscreen #gameStage,
 :-webkit-full-screen #gameStage,
 body.is-fullscreen #gameStage {
-  width: 100vw;
-  height: 100vh;
   border-radius: 0;
   border: none;
   box-shadow: none;
